@@ -1,20 +1,20 @@
-from threading import Thread
+from threading import Thread, Lock
 
 a = 0
 
 
-def function(arg):
+def function(arg, lock):
     global a
-    temp = 0
     for _ in range(arg):
-        temp += 1
-    a += temp
+        with lock:
+            a += 1
 
 
 def main():
     threads = []
+    lock = Lock()
     for i in range(5):
-        thread = Thread(target=function, args=(1000000,))
+        thread = Thread(target=function, args=(1000000, lock,))
         thread.start()
         threads.append(thread)
 
