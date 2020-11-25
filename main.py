@@ -1,24 +1,23 @@
-from threading import Thread, Lock
-
-a = 0
+from multiprocessing.pool import ThreadPool
 
 
-def function(arg, lock):
-    global a
+def function(arg):
+    answer = 0
     for _ in range(arg):
-        with lock:
-            a += 1
+        answer += 1
+    return answer
+
+
+def generator(n):
+    while n > 0:
+        yield 10000
+        n -= 1
 
 
 def main():
-    threads = []
-    lock = Lock()
-    for i in range(5):
-        thread = Thread(target=function, args=(1000000, lock,))
-        thread.start()
-        threads.append(thread)
-
-    [t.join() for t in threads]
+    num_processes = 5
+    with ThreadPool(processes=num_processes) as pool:
+        a = sum(pool.map(function, generator(num_processes)))
     print("----------------------", a)
 
 
